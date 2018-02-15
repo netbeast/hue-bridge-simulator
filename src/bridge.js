@@ -61,114 +61,7 @@ app.use(express.static(path.join(__dirname, '../public_html')))
 app.use(bodyParser.json())
 app.use(allowCrossDomain)
 
-app.set('state', {
-  lights: {
-    '1': {
-      state: {
-        on: false,
-        bri: 0,
-        hue: 0,
-        sat: 0,
-        xy: [0.0, 0.0],
-        ct: 0,
-        alert: 'none',
-        effect: 'none',
-        colormode: 'hs',
-        reachable: true,
-      },
-      type: 'Extended color light',
-      name: 'Hue Lamp 1',
-      modelid: 'LCT001',
-      manufacturername: 'Philips',
-      uniqueid: '66:11:38:22:28:3b:8d:6f-0b',
-      swversion: '65003148',
-      pointsymbol: {
-        '1': 'none',
-        '2': 'none',
-        '3': 'none',
-        '4': 'none',
-        '5': 'none',
-        '6': 'none',
-        '7': 'none',
-        '8': 'none',
-      },
-    },
-    '2': {
-      state: {
-        on: true,
-        bri: 254,
-        hue: 33536,
-        sat: 144,
-        xy: [0.346, 0.3568],
-        ct: 201,
-        alert: 'none',
-        effect: 'none',
-        colormode: 'hs',
-        reachable: true,
-      },
-      type: 'Extended color light',
-      name: 'Hue Lamp 2',
-      modelid: 'LCT001',
-      manufacturername: 'Philips',
-      uniqueid: 'c4:03:ae:98:28:d8:cc:af-0b',
-      swversion: '65003148',
-      pointsymbol: {
-        '1': 'none',
-        '2': 'none',
-        '3': 'none',
-        '4': 'none',
-        '5': 'none',
-        '6': 'none',
-        '7': 'none',
-        '8': 'none',
-      },
-    },
-  },
-  groups: {
-    '1': {
-      action: {
-        on: true,
-        bri: 254,
-        hue: 33536,
-        sat: 144,
-        xy: [0.346, 0.3568],
-        ct: 201,
-        effect: 'none',
-        colormode: 'xy',
-      },
-      lights: ['1', '2'],
-      name: 'Group 1',
-    },
-  },
-  config: {
-    name: 'Philips hue',
-    mac: '00:00:88:00:bb:ee',
-    dhcp: true,
-    ipaddress: '192.168.1.74',
-    netmask: '255.255.255.0',
-    gateway: '192.168.1.254',
-    proxyaddress: '',
-    proxyport: 0,
-    UTC: '2012-10-29T12:00:00',
-    whitelist: {
-      newdeveloper: {
-        'last use date': '2012-10-29T12:00:00',
-        'create date': '2012-10-29T12:00:00',
-        name: 'test user',
-      },
-    },
-    swversion: '01003542',
-    swupdate: {
-      updatestate: 0,
-      url: '',
-      text: '',
-      notify: false,
-    },
-    linkbutton: false,
-    portalservices: false,
-  },
-  schedules: {},
-})
+app.set('state', require('./initialState'))
 
 app.get('/', function (req, res) {
   res.redirect(301, 'index.html')
@@ -687,26 +580,29 @@ app.get('/api/:username', whitelist, function (req, res) {
   res.json(app.get('state'))
 })
 
+app.use('/api/:username/sensors', (req, res) => res.json({status: 'ok'}))
+
 app.get('/description.xml', function (req, res) {
-  fs.readFile(path.join(__dirname, '/description.xml'), {encoding: 'utf8'}, function (
-    err,
-    data
-  ) {
-    if (err) res.status(500).json(err)
+  fs.readFile(
+    path.join(__dirname, '/description.xml'),
+    {encoding: 'utf8'},
+    function (err, data) {
+      if (err) res.status(500).json(err)
 
-    let address = app._server.address()
-    if (address.address === '0.0.0.0') {
-      // bound to all interfaces, just return the host that the request came in on
-      address.address = request.headers.host
+      let address = app._server.address()
+      if (address.address === '0.0.0.0') {
+        // bound to all interfaces, just return the host that the request came in on
+        address.address = request.headers.host
+      }
+
+      data = data
+        .replace(/\{\{IP\}\}/g, address.address)
+        .replace(/\{\{PORT\}\}/g, address.port)
+
+      res.header('Content-Type', 'application/xml; charset=UTF-8')
+      res.send(data)
     }
-
-    data = data
-      .replace(/\{\{IP\}\}/g, address.address)
-      .replace(/\{\{PORT\}\}/g, address.port)
-
-    res.header('Content-Type', 'application/xml; charset=UTF-8')
-    res.send(data)
-  })
+  )
 })
 
 function localAddress () {
