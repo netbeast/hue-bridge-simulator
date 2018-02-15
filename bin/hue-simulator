@@ -1,23 +1,26 @@
 #!/usr/bin/env node
 
-var parseArgs = require('minimist')
-var options = parseArgs(process.argv.slice(2), {
-	'default': {
-		port: 80,
-		hostname: undefined,
-		backlog: undefined
-	}
-});
+const parseArgs = require('minimist')
+const options = parseArgs(process.argv.slice(2), {
+  'default': {
+    port: 80,
+    hostname: undefined,
+    backlog: undefined
+  }
+})
 
-var bridge = require('../bridge.js');
-var domain = require('domain').create();
+const bridge = require('../src/bridge.js')
+const domain = require('domain').create()
 
 domain.on('error', function(err) {
-	console.log('Could not start hue simulator: ' + err.message);
-	if (err.code === 'EACCES') console.error('It looks like you do not have permission to listen on this port. Need sudo?');
-	if (err.code === 'EADDRINUSE') console.error('The address is already in use. Maybe you already have a service listening on port ' + options.port + '. Shut down the other process or use another port.');
-});
+  console.log('Could not start hue simulator: ' + err.message)
+  if (err.code === 'EACCES') {
+    console.error('It looks like you do not have permission to listen on this port. Need sudo?')
+  } else if (err.code === 'EADDRINUSE') {
+    console.error('The address is already in use. Maybe you already have a service listening on port ' + options.port + '. Shut down the other process or use another port.')
+  }
+})
 
 domain.run(function() {
-	bridge.run(options);
-});
+  bridge.run(options)
+})
