@@ -316,10 +316,7 @@ function createSchedule (id, schedule) {
       )
       request(
         {
-          uri:
-            'http://127.0.0.1:' +
-            (process.env.PORT || 80) +
-            schedule.command.address,
+          uri: `${getServerUrl(app._server)}/${schedule.command.address}`,
           method: schedule.command.method,
           body: JSON.stringify(schedule.command.body),
         },
@@ -620,20 +617,27 @@ function localAddress () {
 }
 
 app.run = function (options) {
-  const serverAddress = `${options.hostname || localAddress()}:${options.port}`
 
   // save server reference for use in route "/description.xml"
-  app._server = app.listen(
+  const server = app.listen(
     options.port,
     options.hostname,
     options.backlog,
     function () {
-      console.log(`hue simulator listening @ ${serverAddress}`)
+      console.log(`hue simulator listening @ ${getServerUrl(server, options)}`)
       announceBridge({
-        location: `http://${serverAddress}`,
+        location: getServerUrl(server, options),
       })
     }
   )
+
+  app._server = server
+}
+
+function getServerUrl (server, options = {}) {
+  const host = options.hostname || localAddress()
+  const port = server.address().port
+  return `http://${host}:${port}`
 }
 
 module.exports = app
