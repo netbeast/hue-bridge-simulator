@@ -57,6 +57,5 @@
   "bin": {
     "hue-bridge-simulator": "./bin/hue-bridge-simulator"
   },
-  "private": true,
   "workspaces": ["packages/node-ssdp"]
 }
