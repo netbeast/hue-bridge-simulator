@@ -37,7 +37,7 @@
   },
   "main": "src/bridge.js",
   "scripts": {
-    "start": "node ./bin/hue-simulator",
+    "start": "node ./bin/hue-bridge-simulator",
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "node_modules/.bin/eslint src",
     "prettier": "node_modules/.bin/prettier --write \"src/**/*.js\"",
@@ -55,7 +55,7 @@
   },
   "bugs": "https://github.com/netbeast/hue-bridge-simulator/issues",
   "bin": {
-    "hue-simulator": "./bin/hue-simulator"
+    "hue-bridge-simulator": "./bin/hue-bridge-simulator"
   },
   "private": true,
   "workspaces": ["packages/node-ssdp"]

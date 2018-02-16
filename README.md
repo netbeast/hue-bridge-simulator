@@ -7,7 +7,7 @@ As I started development of hueJS before getting my Hue starter kit, i needed to
 Using npm:
 
 ```sh
-sudo npm install -g hue-simulator
+sudo npm install -g hue-bridge-simulator
 ```
 
 It should be installed [globally](http://blog.nodejitsu.com/npm-cheatsheet#Understanding_Global_versus_Local_installs_in_npm) by default, so you can start the simulator via command line, but to be sure we are adding the `-g` flag.
@@ -17,15 +17,15 @@ It should be installed [globally](http://blog.nodejitsu.com/npm-cheatsheet#Under
 Start the simulator via command line (if installed globally):
 
 ```sh
-# start the simulator on localhost:80
-sudo hue-simulator
+# start the simulator on a random available port #
+hue-bridge-simulator
 
-# start the simulator on localhost:8080 #
-hue-simulator --port=8080
+# start the simulator on localhost:80
+sudo hue-bridge-simulator --port 80
 
 # start the simulator on 127.0.3.1:80 #
-sudo ifconfig lo0 alias 127.0.3.1
-sudo hue-simulator --hostname=127.0.3.1
+ifconfig lo0 alias 127.0.3.1
+hue-bridge-simulator --hostname=127.0.3.1
 ```
 
 Sudo is necessary when we want to listen on port 80, a so called low-port that are restricted to the unix root user.
