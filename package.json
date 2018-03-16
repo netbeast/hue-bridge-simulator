@@ -12,7 +12,7 @@
     "Sven Riecker <sven@nooblucker.de>",
     "Netbeast Engineering <staff@netbeast.co>"
   ],
-  "version": "0.0.14",
+  "version": "0.0.15",
   "dependencies": {
     "bluebird": "^3.5.1",
     "body-parser": "^1.18.2",
