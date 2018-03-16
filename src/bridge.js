@@ -616,7 +616,7 @@ function localAddress () {
   return addresses.length === 0 ? null : addresses[0]
 }
 
-app.run = function (options = {}) {
+app.run = function (options = {}, callback) {
   // save server reference for use in route "/description.xml"
   const server = app.listen(
     options.port,
@@ -627,6 +627,10 @@ app.run = function (options = {}) {
       announceBridge({
         location: getServerUrl(server, options),
       })
+
+      if (typeof callback === 'function') {
+        callback()
+      }
     }
   )
 
@@ -635,14 +639,8 @@ app.run = function (options = {}) {
 
 app.kill = function () {
   app._server && app._server.close() // Won't accept new connection
-    .on('close', () => {
-      console.log('Server stopped')
-      delete app._server
-    })
-    .on('error', (e) => {
-      console.log('Error stopping server:', e)
-      delete app._server
-    })
+    .on('close', () => delete app._server)
+    .on('error', () => delete app._server)
 }
 
 function getServerUrl (server, options = {}) {
